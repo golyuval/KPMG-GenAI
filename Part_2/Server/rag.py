@@ -15,10 +15,11 @@ class RAG:
 
     def html_docs(self):
 
-        for file in Path("../../Data/phase2_data").glob("*.html"):
+        for file in Path("../Data/phase2_data").glob("*.html"):
 
             hmo = file.stem
             txt = BeautifulSoup(file.read_text(encoding="utf8"), "lxml").get_text(" ")
+            print("hi", txt)
             yield f"[HMO={hmo}] " + " ".join(txt.split())
 
     def build(self):
@@ -29,7 +30,7 @@ class RAG:
         emb = AzureOpenAIEmbeddings(
             azure_endpoint=config.openai_endpoint,
             api_key=config.openai_key,
-            deployment=config.openai_model_mini,
+            deployment=config.openai_emb,
             api_version=config.openai_version,
         )
 

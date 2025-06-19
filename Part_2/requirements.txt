@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+openai>=1.14.0
+langchain-openai
+langchain-community
+faiss-cpu
+python-dotenv
+gradio
+beautifulsoup4
+lxml
+pydantic
+requests
