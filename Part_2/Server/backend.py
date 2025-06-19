@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from typing import List, Dict, Any
 from langchain_openai import AzureChatOpenAI
-from langchain.chains import conversational_retrieval
+from langchain.chains.conversational_retrieval.base import ConversationalRetrievalChain
 from Server import rag
 from Core import config
 
@@ -24,7 +24,7 @@ collect_chain = llm
 
 # -------- RAG chain ----------------------
 
-qa_chain = conversational_retrieval.from_llm(
+qa_chain = ConversationalRetrievalChain.from_llm(
     llm,
     rag.rag.vstore.as_retriever(search_kwargs={"k": 4}),
     return_source_documents=False,
@@ -46,7 +46,7 @@ class Response(BaseModel):
 def collect(history, user_msg):
 
     msgs = [
-        {"role": "system", "content": config},
+        {"role": "system", "content": config.chatbot_system_collection},
         *history,
         {"role": "user", "content": user_msg},
     ]
@@ -78,7 +78,7 @@ async def chat(req: Request):
     else:
 
         user_context = json.dumps(req.user_info, ensure_ascii=False)
-        system = config.format(info=user_context)
+        system = config.chatbot_system_qa.format(info=user_context)
         answer = qa_chain.run(
             {
                 "question": req.user_msg,
