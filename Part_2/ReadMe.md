@@ -89,7 +89,7 @@ Running on public URL: https://xxxxx.gradio.live
 
 1. The chatbot will greet you and ask for your information
 
-![alt text](Data/readme/image-1.png)
+![alt text](../Data/phase1_pics/image-1.png)
 
 2. Provide the following details when asked:
    - First name (שם פרטי)
@@ -107,13 +107,13 @@ Running on public URL: https://xxxxx.gradio.live
 2. Confirm if correct or request changes
 3. Once verified, proceed to Q&A
 
-![alt text](Data/readme/image-2.png)
+![alt text](../Data/phase1_pics/image-2.png)
 
 ### Phase 2: Q&A
 
 Ask questions about your HMO services. The bot will provide answers based on your HMO and insurance tier.
 
-![alt text](Data/readme/image-3.png)
+![alt text](../Data/phase1_pics/image-3.png)
 
 ## Monitoring and Debugging
 
