@@ -146,12 +146,13 @@ def collect(history, user_msg):
         
         user_language = detect_language(user_msg)
         language_instruction = get_language_prompt(user_language)
-        logger.info(f"Detected language: {user_language} for collection phase")
 
         formatted_prompt = config.chatbot_system_collection.format(
             info=config.chatbot_format_user_info
         ) + f"\n\n{language_instruction}"
         
+        logger.info("COLLECT prompt:\n%s", formatted_prompt)
+
         msgs = [
             {"role": "system", "content": formatted_prompt},
             *history,
@@ -196,7 +197,7 @@ def collect(history, user_msg):
 
 # ------------- phase 1.5 - verification ------------------------------
 
-def verify(history, user_msg, current_info):
+def verify(history, user_msg, current_info):    
 
     logger.info(f"Starting verification phase for user: {current_info.get('id_number', 'unknown')}")
     
@@ -208,12 +209,13 @@ def verify(history, user_msg, current_info):
 
         user_language = current_info.get("language", detect_language(user_msg))
         language_instruction = get_language_prompt(user_language)
-        logger.info(f"Using language: {user_language} for verification phase")
 
         formatted_prompt = config.chatbot_system_verification.format(
             current_info=current_info_str,
             json_format=config.chatbot_format_user_info
         ) + f"\n\n{language_instruction}"
+        
+        logger.info("VERIFY prompt:\n%s", formatted_prompt)
         
         msgs = [
             {"role": "system", "content": formatted_prompt},
@@ -263,11 +265,13 @@ def get_qa_chain(session_id: str):
         input_key="question"  
     )
     
-    # Use the config prompt instead of hardcoded one
+    
     qa_prompt = PromptTemplate(
         template=config.chatbot_system_qa,
         input_variables=["context", "user_info", "question", "hmo_name", "tier"]
     )
+   
+
     
     return ConversationalRetrievalChain.from_llm(
         llm,

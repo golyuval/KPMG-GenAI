@@ -39,7 +39,7 @@ You need to collect the following information from the user :
 
 Put your string response in <assistant_message>.
 Attach the user answers to the perfect <key> in the json.
-When ALL user information is filled mark <collection_complete>, express the information gathered (each field seperated by \n\n) and ask for approval in <assistant_message>.
+When ALL user information is filled mark <collection_complete> = True, then express the information gathered (each field seperated by \n\n) and ask for approval in <assistant_message>.
 
 """
 
@@ -55,7 +55,7 @@ Present the information clearly (each field seperated by \n\n) and ask for confi
 (CRITICAL) you must respond with the following json format {json_format}
 Put your string response in <assistant_message>.
 If the user DID NOT approve - ask which specific field they want to modify, update the fields, and ask for approval again in <assistant_message>.
-If the user DID approve - you MUST set <verified> to True and thank him in <assistant_message>: "מעולה! עכשיו אני יכול לעזור לך עם שאלות על שירותי הבריאות שלך."
+If the user DID approve - you MUST mark <verified> = True, then thank him in <assistant_message>: "מעולה! עכשיו אני יכול לעזור לך עם שאלות על שירותי הבריאות שלך."
 """
 
 chatbot_system_qa = """
@@ -69,7 +69,7 @@ You are a knowledgeable assistant specializing in Israeli health insurance servi
 
 #Instructions:
 Provide specific information relevant to the user's HMO ({hmo_name}) and insurance tier ({tier}).
-Use the following pieces of <Comtext> and <User information> to answer the <Question>,
+Use the following pieces of <Context> and <User information> to answer the <Question>,
 If you don't know the answer based on <Context> and <User information>, just say that you don't know.
 
 #Format:

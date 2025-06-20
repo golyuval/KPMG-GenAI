@@ -69,7 +69,7 @@ INFO:     Uvicorn running on http://127.0.0.1:8000
 ### 2. Start the Frontend (New Terminal)
 
 ```bash
-python ./Part_2/Client/chat.py
+python ./Part_2/Client/app.py
 ```
 
 Expected output:
@@ -117,16 +117,6 @@ Ask questions about your HMO services. The bot will provide answers based on you
 
 ## Monitoring and Debugging
 
-### Check Logs
-
-```bash
-# View info logs
-tail -f Part_2/Log/log_info.log
-
-# View error logs
-tail -f Part_2/Log/log_error.log
-```
-
 ### API Endpoints for Monitoring
 
 - Health Check `http://localhost:8000/health`
@@ -136,7 +126,7 @@ tail -f Part_2/Log/log_error.log
 - Log error `http://localhost:8000/logs/error`
 
 
-### Unfinished 
+## Needed for production 
 - Secure routes with API key
 - Invocation of actual field validators
 - Testing caching mechanizm
