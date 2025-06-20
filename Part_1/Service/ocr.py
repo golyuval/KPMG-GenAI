@@ -1,12 +1,14 @@
 from azure.ai.documentintelligence import DocumentIntelligenceClient
 from azure.ai.documentintelligence.models import AnalyzeResult
 from azure.core.credentials import AzureKeyCredential
-import logging
 from typing import Dict, List, Tuple
 import base64
 import io
 
-logger = logging.getLogger(__name__)
+from Core.log_config import get_module_logger
+
+logger = get_module_logger(__name__)
+
 
 class OCR:
 
@@ -23,7 +25,9 @@ class OCR:
 
     def extract_text(self, file_content: bytes, file_type: str) -> Dict:
 
-        logger.info(f"Starting OCR analysis for {file_type} file")
+        logger.info(f"Starting OCR analysis for {file_type} file ({len(file_content)} bytes)")
+
+        # ---------- prepare file -----------------------------
 
         mime_map = {
             'pdf': 'application/pdf',
@@ -33,17 +37,24 @@ class OCR:
         }
 
         type = mime_map.get(file_type.lower(), 'application/pdf')
+        logger.debug(f"Using MIME type: {type}")
         
+        # ---------- analyze file -----------------------------
+
         poller = self.client.begin_analyze_document(
             model_id="prebuilt-layout",
             body=file_content,
             content_type=type
         )
+        logger.info("Document analysis request submitted, waiting for results...")
         
         result: AnalyzeResult = poller.result()
         logger.info(f"OCR analysis completed. Found {len(result.pages)} pages")
         
+        # ---------- process results -----------------------------
+
         extracted_data = self.process(result)
+        logger.info(f"OCR processing completed successfully. Extracted {len(extracted_data.get('lines', []))} lines")
         
         return extracted_data   
     
