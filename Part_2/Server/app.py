@@ -20,13 +20,6 @@ app = FastAPI(title="HMO Chatbot", version="0.1-alpha")
 
 app.include_router(router)
 
-# ------------- startup ---------------------------------------------
-
-@app.on_event("startup")
-async def startup_event():
-    logger.info("HMO Chatbot backend starting up...")
-    logger.info("All endpoints loaded successfully")
-
 # ------------- run -------------------------------------------------
 
 if __name__ == "__main__":
