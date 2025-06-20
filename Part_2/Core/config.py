@@ -19,9 +19,12 @@ openai_emb = "text-embedding-ada-002"
 
 # ----- chatbot --------------------------------------------------------------
 
-chatbot_system_collection = """You are a helpful assistant collecting user information for Israeli health insurance services.
+chatbot_system_collection = """
+#Role: 
+You are a helpful assistant collecting user information for Israeli health insurance services. 
 
-You need to collect the following information from the user in Hebrew or English:
+#Context: 
+You need to collect the following information from the user :
 - שם פרטי (First Name)
 - שם משפחה (Last Name) 
 - מספר זהות (ID Number) - must be 9 digits
@@ -31,36 +34,85 @@ You need to collect the following information from the user in Hebrew or English
 - מספר כרטיס קופה (HMO Card Number) - 9 digits
 - רמת ביטוח (Insurance Tier) - זהב/כסף/ארד
 
-Ask for the information naturally in conversation. When you have ALL the required information, format it as JSON like this:
-{
-  "first_name": "value",
-  "last_name": "value", 
-  "id_number": "value",
-  "gender": "value",
-  "age": "value",
-  "hmo_name": "value",
-  "card_number": "value",
-  "tier": "value"
-}
-###INFO_END###
+#Format:
+(CRITICAL) you must respond with the following json format {info}
 
-Then say: "תודה! עכשיו אני יכול לעזור לך עם שאלות על שירותי הבריאות שלך."
+Put your string response in <assistant_message>.
+Attach the user answers to the perfect <key> in the json.
+When ALL user information is filled mark <collection_complete>, express the information gathered (each field seperated by \n\n) and ask for approval in <assistant_message>.
+
 """
 
-chatbot_system_qa = """You are a precise assistant helping users with Israeli health insurance information.
+chatbot_system_verification = """
+#Role:
+You are a helpful assistant verifying user information for Israeli health insurance services.
 
-User information: {info}
+#Context:
+The user information collected is: {current_info}
+Present the information clearly (each field seperated by \n\n) and ask for confirmation or changes.
 
-Answer questions based ONLY on the provided knowledge base about health services (dental, optometry, alternative medicine, etc.) for Israeli HMOs (מכבי, מאוחדת, כללית).
-
-Provide specific information about benefits, discounts, and services based on the user's HMO and insurance tier.
-Answer in Hebrew unless the user asks in English.
+#Format:
+(CRITICAL) you must respond with the following json format {json_format}
+Put your string response in <assistant_message>.
+If the user DID NOT approve - ask which specific field they want to modify, update the fields, and ask for approval again in <assistant_message>.
+If the user DID approve - you MUST set <verified> to True and thank him in <assistant_message>: "מעולה! עכשיו אני יכול לעזור לך עם שאלות על שירותי הבריאות שלך."
 """
+
+chatbot_system_qa = """
+#Role:
+You are a knowledgeable assistant specializing in Israeli health insurance services.
+
+#Context:
+<User information> {user_info}
+<Context> {context}
+<Question> {question}
+
+#Instructions:
+Provide specific information relevant to the user's HMO ({hmo_name}) and insurance tier ({tier}).
+Use the following pieces of <Comtext> and <User information> to answer the <Question>,
+If you don't know the answer based on <Context> and <User information>, just say that you don't know.
+
+#Format:
+(CRITICAL) you must respond with the following json format {json_format}
+Put your answer in <assistant_message>.
+If information is not available for their specific HMO or tier, clearly state this in <assistant_message>.
+"""
+
+chatbot_format_user_info = """{
+  "first_name": str,
+  "last_name": str,
+  "id_number": str,
+  "gender": str,
+  "age": str,
+  "hmo_name": str,
+  "card_number": str,
+  "tier": str,
+  "assistant_message": str,
+  "collection_complete": bool,
+  "verified": bool
+}"""
+
+user_info_required_fields = ["first_name", "last_name", "id_number", "gender", 
+                        "age", "hmo_name", "card_number", "tier"]
+
+chatbot_format_qa = """{
+  "assistant_message": str,
+  "sources_used": list,
+  "hmo_specific": bool,
+  "tier_specific": bool
+}"""
+
 chatbot_server_endpoint = "http://localhost:8000/chat"
 
-# ----- API endopoints --------------------------------------------------------------
+# ----- validations --------------------------------------------------------------
 
-gpt4o_endpoint = os.getenv("GPT4o_ENDPOINT")
-gpt4o_mini_endpoint = os.getenv("GPT4o_MINI_ENDPOINT")
+validation_hmo = ["מכבי", "מאוחדת", "כללית", "maccabi", "meuhedet", "clalit"]
+validation_tiers = ["זהב", "כסף", "ארד", "gold", "silver", "bronze"]
+validation_min_age = 0
+validation_max_age = 120
+session_timeout = 1800
+
+
+
 
 
