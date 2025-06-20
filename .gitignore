@@ -1,3 +1,222 @@
-.env
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Virtual Environments
+venv/
+ENV/
+env/
 .venv
-roadmap.ipynb
+.ENV
+.env.local
+.env.*.local
+virtualenv/
+pipenv/
+poetry/
+
+# Environment Variables
+.env
+.env.*
+!.env.example
+!.env.template
+
+# Azure & API Keys
+*.key
+*.pem
+*.cer
+credentials.json
+secrets.json
+config.secret.py
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+.vs/
+*.code-workspace
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Logs
+Log/
+logs/
+*.log
+log_*.txt
+*.log.*
+!logger_config.py
+!logger_setup.py
+!log_config.py
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+junit.xml
+pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# Data & Models
+*.db
+*.sqlite
+*.sqlite3
+*.pkl
+*.pickle
+*.h5
+*.hdf5
+*.npy
+*.npz
+*.parquet
+*.feather
+
+# Part 1 Specific - OCR & Processing
+phase1_data/
+phase2_data/
+Data/
+processed_documents/
+output_json/
+*.pdf
+*.jpg
+*.jpeg
+*.png
+*.tiff
+*.bmp
+!sample_*.pdf
+!sample_*.jpg
+!example_*.png
+
+# Part 2 Specific - Chatbot & RAG
+vector_store/
+faiss_index/
+*.faiss
+embeddings_cache/
+chat_history/
+session_data/
+*.bin
+
+# Model files
+models/
+*.pt
+*.pth
+*.onnx
+*.pb
+checkpoint/
+checkpoints/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+~$*
+
+# System
+*.pid
+*.seed
+*.pid.lock
+
+# Documentation build
+docs/_build/
+site/
+mkdocs.yml
+
+# FastAPI/Streamlit/Gradio
+.streamlit/
+flagged/
+gradio_cached_examples/
+*.db-journal
+
+# Node (if using any JS tools)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Distribution
+.pypirc
+dist/
+build/
+*.whl
+
+# Security
+*.crt
+*.csr
+private_key.txt
+public_key.txt
+
+# Custom patterns
+archive/
+backup/
+old/
+deprecated/
+DRAFT*
+TODO*
+scratch*
+
+# Keep important files
+!requirements.txt
+!README.md
+!readme.md
+!.gitkeep
+
