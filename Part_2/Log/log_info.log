@@ -175,3 +175,22 @@ ModuleNotFoundError("No module named 'faiss.swigfaiss_avx512'")
 2025-06-20 13:12:53,905 - __main__ - INFO - User info collected successfully
 2025-06-20 13:12:53,905 - __main__ - INFO - Successfully received response from backend for user: 123123123
 2025-06-20 13:13:33,840 - routes - INFO - Checking log file at: C:\Users\97252\Desktop\yuval\Work\KPMG-GenAI\Part_2\Log\log_info.log
+2025-06-20 18:58:11,059 - rag - INFO - Processed alternative_services: 3 sections
+2025-06-20 18:58:11,062 - rag - INFO - Processed communication_clinic_services: 3 sections
+2025-06-20 18:58:11,069 - rag - INFO - Processed dentel_services: 3 sections
+2025-06-20 18:58:11,072 - rag - INFO - Processed optometry_services: 3 sections
+2025-06-20 18:58:11,072 - rag - INFO - Processed pragrency_services: 3 sections
+2025-06-20 18:58:11,081 - rag - INFO - Processed workshops_services: 3 sections
+2025-06-20 18:58:11,082 - rag - INFO - Total documents processed: 6
+2025-06-20 18:58:13,754 - httpx - INFO - HTTP Request: POST https://oai-lab-test-eastus-001.openai.azure.com/openai/deployments/text-embedding-ada-002/embeddings?api-version=2025-01-01-preview "HTTP/1.1 200 OK"
+2025-06-20 18:58:14,427 - faiss.loader - INFO - Loading faiss with AVX512 support.
+2025-06-20 18:58:14,427 - faiss.loader - INFO - Could not load library with AVX512 support due to:
+ModuleNotFoundError("No module named 'faiss.swigfaiss_avx512'")
+2025-06-20 18:58:14,427 - faiss.loader - INFO - Loading faiss with AVX2 support.
+2025-06-20 18:58:14,523 - faiss.loader - INFO - Successfully loaded faiss with AVX2 support.
+2025-06-20 18:58:14,529 - faiss - INFO - Failed to load GPU Faiss: name 'GpuIndexIVFFlat' is not defined. Will not load constructor refs for GPU indexes. This is only an error if you're trying to use GPU Faiss.
+2025-06-20 18:58:14,533 - rag - INFO - RAG initialized with 33 vectors
+2025-06-20 18:58:36,347 - httpx - INFO - HTTP Request: GET http://localhost:7860/gradio_api/startup-events "HTTP/1.1 200 OK"
+2025-06-20 18:58:37,654 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-06-20 18:58:38,394 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-06-20 18:58:39,566 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v3/tunnel-request "HTTP/1.1 200 OK"

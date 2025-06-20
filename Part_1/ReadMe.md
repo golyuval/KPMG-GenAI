@@ -26,7 +26,7 @@ source venv\Scripts\activate
 
 3. Install dependencies:
 ```bash
-pip install -r requirements.txt
+pip install -r ./Part_1/requirements.txt
 ```
 
 4. Set up environment variables:
@@ -47,7 +47,7 @@ AZURE_OPENAI_ENDPOINT= ...
 
 1. Start the application:
 ```bash
-streamlit run app.py
+streamlit run ./Part_1/app.py
 ```
 
 2. Open your browser to `http://localhost:8501`
