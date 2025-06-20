@@ -96,6 +96,12 @@ class Validator:
 
         confidence = self.confidence(extracted_data)
         results["confidence_scores"] = confidence
+
+        # ------ section metrics -------------------------
+        
+        section_metrics = self.section_metrics(extracted_data)
+        results["section_metrics"] = section_metrics
+        
         
         # ------ overall -------------------------
 
@@ -444,6 +450,95 @@ class Validator:
                     confidence_scores[field] = 0.3
         
         return confidence_scores
+    
+    def section_metrics(self, data: Dict) -> Dict:
+        
+        # ------ sections ----------------------------------------------------------
+
+        logger.info("Calculating section-based metrics")
+        
+        sections = {
+            "פרטים אישיים": {
+                "fields": ["lastName", "firstName", "idNumber", "gender", "dateOfBirth"],
+                "filled": 0,
+                "total": 0
+            },
+            "פרטי קשר": {
+                "fields": ["address", "landlinePhone", "mobilePhone"],
+                "filled": 0,
+                "total": 0
+            },
+            "תעסוקה": {
+                "fields": ["jobType"],
+                "filled": 0,
+                "total": 0
+            },
+            "פרטי התאונה": {
+                "fields": ["dateOfInjury", "timeOfInjury", "accidentLocation", 
+                          "accidentAddress", "accidentDescription", "injuredBodyPart"],
+                "filled": 0,
+                "total": 0
+            },
+            "למילוי ע״י המוסד הרפואי": {
+                "fields": ["medicalInstitutionFields"],
+                "filled": 0,
+                "total": 0
+            },
+            "שדות נוספים": {
+                "fields": ["signature", "formFillingDate", "formReceiptDateAtClinic"],
+                "filled": 0,
+                "total": 0
+            }
+        }
+        
+        
+        # ------ count filled sections ----------------------------------------------------------
+
+        for section_name, section_info in sections.items():
+            for field in section_info["fields"]:
+                if field in data:
+                    section_info["total"] += 1
+                    
+                    if field == "dateOfBirth" and isinstance(data[field], dict):
+                        date_dict = data[field]
+                        if all(date_dict.get(part, '') for part in ['day', 'month', 'year']):
+                            section_info["filled"] += 1
+                    
+                    elif field == "address" and isinstance(data[field], dict):
+                        addr = data[field]
+                        if addr.get('street', '') and addr.get('city', ''):
+                            section_info["filled"] += 1
+                    
+                    elif field == "dateOfInjury" and isinstance(data[field], dict):
+                        date_dict = data[field]
+                        if all(date_dict.get(part, '') for part in ['day', 'month', 'year']):
+                            section_info["filled"] += 1
+                    
+                    elif field == "formFillingDate" and isinstance(data[field], dict):
+                        date_dict = data[field]
+                        if all(date_dict.get(part, '') for part in ['day', 'month', 'year']):
+                            section_info["filled"] += 1
+                    
+                    elif field == "formReceiptDateAtClinic" and isinstance(data[field], dict):
+                        date_dict = data[field]
+                        if all(date_dict.get(part, '') for part in ['day', 'month', 'year']):
+                            section_info["filled"] += 1
+                    
+                    elif field == "medicalInstitutionFields" and isinstance(data[field], dict):
+                        med = data[field]
+                        if any(med.get(f, '') for f in ['healthFundMember', 'natureOfAccident', 'medicalDiagnoses']):
+                            section_info["filled"] += 1
+                    
+                    elif isinstance(data[field], str) and data[field].strip():
+                        section_info["filled"] += 1
+        
+        # ------ sections ----------------------------------------------------------
+        
+        section_4 = sections["פרטי התאונה"]
+        if section_4["filled"] < section_4["total"]:
+            logger.warning(f"Critical Section 4 (פרטי התאונה) incomplete: {section_4['filled']}/{section_4['total']}")
+        
+        return {name: (info["filled"], info["total"]) for name, info in sections.items()}
     
     # --------------- report ------------------------------------------------------------------------------
 

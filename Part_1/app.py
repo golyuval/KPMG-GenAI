@@ -65,7 +65,7 @@ def process(file_content: bytes, file_type: str, filename: str):
 
     try:
         
-        # -------- ocr ---------------
+        # -------- ocr ----------------
 
         with st.spinner("מבצע OCR על המסמך..."):
             ocr_data = ocr.extract_text(file_content, file_type)
@@ -121,7 +121,7 @@ def display(results: dict):
         st.subheader("שדות שחולצו מהטופס")
         
         # --- personal / contact information  ------------------------
-
+        
         col1, col2 = st.columns(2)
         
         with col1:
@@ -209,16 +209,60 @@ def display(results: dict):
         # --- metrics ------------------------
 
         col1, col2, col3 = st.columns(3)
+
         with col1:
             st.metric("שלמות הטופס", f"{validation.get('completeness_score', 0):.1%}")
+
         with col2:
             total = validation.get('summary', {}).get('total_fields', 0)
             filled = validation.get('summary', {}).get('filled_fields', 0)
             st.metric("שדות שמולאו", f"{filled}/{total}")
+
         with col3:
             missing = len(validation.get('summary', {}).get('missing_required_fields', []))
             st.metric("שדות חובה חסרים", missing)
         
+        # --- section metrics ------------------------
+        
+        if validation.get("section_metrics"):
+            st.subheader("מילוי לפי סעיפים")
+            
+            col1, col2 = st.columns(2)
+            
+            section_data = validation["section_metrics"]
+            sections_list = list(section_data.items())
+            
+            # ------- Sections 1-3 ----------------------------------
+
+            with col1:
+                for i in range(3):
+                    if i < len(sections_list):
+                        section_name, (filled, total) = sections_list[i]
+                        
+                        if i == 3:
+                            st.metric(f"**{section_name} (קריטי)**", f"{filled}/{total}", 
+                                    delta="חובה למילוי" if filled < total else "הושלם")
+                        else:
+                            st.metric(section_name, f"{filled}/{total}")
+            
+            # ------- Sections 4-6 ----------------------------------
+            
+            with col2:
+                for i in range(3, 6):
+                    if i < len(sections_list):
+                        section_name, (filled, total) = sections_list[i]
+                        
+                        if section_name == "פרטי התאונה":
+                            if filled < total:
+                                st.metric(f"**{section_name} **", f"{filled}/{total}", 
+                                        delta="סעיף קריטי - חסר מידע")
+                            else:
+                                st.metric(f"**{section_name} **", f"{filled}/{total}", 
+                                        delta="סעיף קריטי - הושלם")
+                        else:
+                            st.metric(section_name, f"{filled}/{total}")
+            
+            
         # --- errors  ------------------------
 
         if validation.get("validation_errors"):
@@ -260,6 +304,40 @@ def display(results: dict):
                             confidence_data.style.format({"Confidence": "{:.2f}"}),
                             hide_index=True
                         )
+        
+        # --- section completion chart  ------------------------
+        
+        if validation.get("section_metrics"):
+            
+            # --------- regular sections to complete -------------------------------------
+            
+            st.markdown("### השלמת סעיפים")
+            
+            section_data = []
+            for section_name, (filled, total) in validation["section_metrics"].items():
+                completion_rate = (filled / total * 100) if total > 0 else 0
+                section_data.append({
+                    "סעיף": section_name,
+                    "אחוז השלמה": completion_rate,
+                    "מולא": filled,
+                    "סה״כ": total
+                })
+            
+            section_df = pd.DataFrame(section_data)
+            
+            # --------- critical section to complete -------------------------------------
+
+            def highlight_critical(row):
+                if row["סעיף"] == "פרטי התאונה":
+                    return ['background-color: #ffcccc' if row["אחוז השלמה"] < 100 else 'background-color: #ccffcc'] * len(row)
+                return [''] * len(row)
+            
+            st.dataframe(
+                section_df.style.apply(highlight_critical, axis=1).format({"אחוז השלמה": "{:.1f}%"}),
+                hide_index=True
+            )
+            
+            st.bar_chart(section_df.set_index("סעיף")["אחוז השלמה"])
         
         # --- statistics  ------------------------
 
