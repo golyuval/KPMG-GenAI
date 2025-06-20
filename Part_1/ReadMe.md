@@ -26,7 +26,7 @@ source venv\Scripts\activate
 
 3. Install dependencies:
 ```bash
-pip install -r requirements.txt
+pip install -r ./Part_1/requirements.txt
 ```
 
 4. Set up environment variables:
@@ -47,30 +47,30 @@ AZURE_OPENAI_ENDPOINT= ...
 
 1. Start the application:
 ```bash
-streamlit run app.py
+streamlit run ./Part_1/app.py
 ```
 
 2. Open your browser to `http://localhost:8501`
-![alt text](Data/phase1_pics/image.png)
+![alt text](../Data/phase1_pics/image.png)
 
 3. Upload a form document (PDF, JPG, JPEG, or PNG)
-![alt text](Data/phase1_pics/image-1.png)
+![alt text](../Data/phase1_pics/image-1.png)
 
 4. Click "התחל עיבוד" (Start Processing) to extract data
 
 
 5. View results in different tabs:
    - **נתונים מחולצים** (Extracted Data): View all extracted fields
-   ![alt text](Data/phase1_pics/image-2.png)
+   ![alt text](../Data/phase1_pics/image-2.png)
 
    - **אימות** (Validation): See validation results and errors
-   ![alt text](Data/phase1_pics/image-3.png)
+   ![alt text](../Data/phase1_pics/image-3.png)
 
    - **מטריקות** (Metrics): View confidence scores and statistics
-![alt text](Data/phase1_pics/image-4.png)
+![alt text](../Data/phase1_pics/image-4.png)
 
    - **JSON**: Raw JSON output with download option
-   ![alt text](Data/phase1_pics/image-5.png)
+   ![alt text](../Data/phase1_pics/image-5.png)
 
 ## Output Format
 
