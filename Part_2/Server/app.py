@@ -5,7 +5,6 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 
 from fastapi import FastAPI
-import routes
 from Core.logger_setup import get_logger
 from routes import router
 

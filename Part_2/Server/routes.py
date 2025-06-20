@@ -170,10 +170,9 @@ async def get_info_logs(
     lines: int = 100,
     api_key: str = Header(None, alias="X-API-Key")
 ):
-    """Get recent info logs"""
     
     try:
-        # Get the correct path
+        
         server_dir = Path(__file__).parent
         part2_dir = server_dir.parent
         log_file = part2_dir / "Log" / "log_info.log"
@@ -187,7 +186,7 @@ async def get_info_logs(
                 "working_dir": str(Path.cwd())
             }
         
-        # Read last N lines
+        
         with open(log_file, 'r', encoding='utf-8', errors='ignore') as f:
             all_lines = f.readlines()
             recent_lines = all_lines[-lines:] if len(all_lines) > lines else all_lines
