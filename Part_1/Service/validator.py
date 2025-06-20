@@ -1,10 +1,10 @@
-import logging
 from typing import Dict, Any, Optional, List
 import json
 from datetime import datetime
 import re
+from Core.log_config import get_module_logger
 
-logger = logging.getLogger(__name__)
+logger = get_module_logger(__name__)
 
 
 class Validator:
@@ -46,6 +46,8 @@ class Validator:
 
     def valid_extraction(self, extracted_data: Dict, ground_truth: Optional[Dict] = None) -> Dict:
         
+        logger.info("Starting comprehensive validation")
+    
         results = {
             "is_valid": True,
             "validation_errors": [],
@@ -61,11 +63,17 @@ class Validator:
         schema_validation = self.valid_schema(extracted_data)
         results["schema_valid"] = schema_validation["is_valid"]
         results["validation_errors"].extend(schema_validation["errors"])
+        logger.debug(f"Schema validation: {'PASSED' if schema_validation['is_valid'] else 'FAILED'}")
+    
         
         # ------ field -------------------------
 
         field_validation = self.valid_fields(extracted_data)
         results["field_level_validation"] = field_validation
+        failed_fields = [field for field, details in field_validation.items() if not details.get('is_valid', True)]
+    
+        if failed_fields:
+            logger.warning(f"Field validation failed for: {failed_fields}")
         
         # ------ completeness -------------------------
 
@@ -74,13 +82,15 @@ class Validator:
         results["summary"]["total_fields"] = completeness["total_fields"]
         results["summary"]["filled_fields"] = completeness["filled_fields"]
         results["summary"]["missing_required_fields"] = completeness["missing_required"]
-        
+        logger.info(f"Completeness score: {completeness['score']:.2%}")
+
         # ------ accuracy -------------------------
 
         if ground_truth:
             accuracy = self.accuracy(extracted_data, ground_truth)
             results["accuracy_score"] = accuracy["overall_accuracy"]
             results["field_accuracy"] = accuracy["field_accuracy"]
+            logger.info(f"Accuracy score: {accuracy['overall_accuracy']:.2%}")
         
         # ------ confidence -------------------------
 

@@ -5,7 +5,10 @@ from typing import Dict, Any, Optional
 from Core.schema import Form
 import re
 
-logger = logging.getLogger(__name__)
+from Core.log_config import get_module_logger
+
+logger = get_module_logger(__name__)
+
 
 
 class Extractor:
@@ -24,30 +27,48 @@ class Extractor:
     
     def extract_fields(self, ocr_data: Dict, retry_count: int = 0) -> Dict:
    
+        logger.info(f"Starting field extraction (attempt {retry_count + 1})")
+        logger.debug(f"OCR data contains {len(ocr_data.get('full_text', ''))} characters")
 
         system_prompt = self.system_prompt()
         user_prompt = self.extraction_prompt(ocr_data)
         
         logger.info("Sending extraction request to GPT-4o")
+        logger.debug(f"Using model: {self.name}")
         
         # -------- infer --------------------------------------
 
-        response = self.client.chat.completions.create(
-            model=self.name,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt}
-            ],
-            temperature=0.1,  # Low temperature for consistency
-            response_format={"type": "json_object"},
-            max_tokens=2000
-        )
+        try :
+            response = self.client.chat.completions.create(
+                model=self.name,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt}
+                ],
+                temperature=0.1,  # Low temperature for consistency
+                response_format={"type": "json_object"},
+                max_tokens=2000
+            )
+
+            logger.info("Received response from GPT-4o")
+            logger.debug(f"Response tokens used: {response.usage.total_tokens if hasattr(response, 'usage') else 'N/A'}")
+            
+            extracted = json.loads(response.choices[0].message.content)
+            logger.info("Successfully parsed JSON response")
+            
+            cleaned = self.clean(extracted)
+            logger.info("Data cleaning completed successfully")
+            
+            logger.info("Field extraction completed successfully")
+            return cleaned.output()
         
-        extracted = json.loads(response.choices[0].message.content)
-        cleaned = self.clean(extracted)
-        
-        logger.info("Field extraction completed successfully")
-        return cleaned.output()
+        except json.JSONDecodeError as e:
+            logger.error(f"Failed to parse JSON response: {str(e)}")
+            raise
+
+        except Exception as e:
+            logger.error(f"Error during field extraction: {str(e)}", exc_info=True)
+            raise
             
     # --------------- prompts ------------------------------------------------------------------------------
 
@@ -155,7 +176,9 @@ class Extractor:
     # --------------- cleaning ------------------------------------------------------------------------------
 
     def clean(self, extracted_data: Dict) -> Form:
-            
+        
+        logger.debug("Starting data cleaning and validation")
+        
         # ----- nested ----------------------------------------
 
         if 'date_of_birth' in extracted_data and isinstance(extracted_data['date_of_birth'], dict):
@@ -180,9 +203,14 @@ class Extractor:
         
         # ----- validate ----------------------------------------
 
-        form_data = Form(**extracted_data)
+        try:
+            form_data = Form(**extracted_data)
+            logger.debug("Form validation successful")
+            return form_data
         
-        return form_data          
+        except Exception as e:
+            logger.error(f"Form validation failed: {str(e)}")
+            raise        
     
     def clean_phone(self, phone: str) -> str:
         

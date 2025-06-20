@@ -27,6 +27,8 @@ logger = logging.getLogger(__name__)
 @st.cache_resource
 def services():
     
+    logger.info("Initializing services...")
+    
     ocr = OCR(
         endpoint=config.doc_int_endpoint,
         key=config.doc_int_key
@@ -40,12 +42,16 @@ def services():
     )
     
     validator = Validator()
+
+    logger.info("All services initialized successfully")
     
     return ocr, extractor, validator
 
 def process(file_content: bytes, file_type: str, filename: str):
     
     # --- init ---------------------------------------------------------------
+
+    logger.info(f"Starting document processing for file: {filename} (type: {file_type}, size: {len(file_content)} bytes)")
 
     ocr, extractor, validator = services()
     
@@ -65,6 +71,7 @@ def process(file_content: bytes, file_type: str, filename: str):
             ocr_data = ocr.extract_text(file_content, file_type)
             results["ocr_success"] = True
             results["ocr_text_length"] = len(ocr_data.get('full_text', ''))
+            logger.info(f"OCR completed successfully. Extracted {results['ocr_text_length']} characters")
         
         # -------- extractor ----------
 
@@ -72,6 +79,7 @@ def process(file_content: bytes, file_type: str, filename: str):
             extracted_fields = extractor.extract_fields(ocr_data)
             results["extraction_success"] = True
             results["extracted_data"] = extracted_fields
+            logger.info("Field extraction completed successfully")
         
         # -------- validator ----------
 
@@ -79,7 +87,8 @@ def process(file_content: bytes, file_type: str, filename: str):
             validation_results = validator.valid_extraction(extracted_fields)
             results["validation"] = validation_results
             results["status"] = "completed"
-
+            logger.info("Field extraction completed successfully")
+        
     # --- process failed ---------------------------------------------------------------
  
     except Exception as e:
@@ -87,7 +96,8 @@ def process(file_content: bytes, file_type: str, filename: str):
         results["status"] = "error"
         results["error"] = str(e)
         st.error(f"שגיאה בעיבוד המסמך: {str(e)}")
-    
+
+    logger.info(f"Document processing completed for {filename} with status: {results['status']}")
     return results
 
 def display(results: dict):
@@ -99,7 +109,7 @@ def display(results: dict):
         st.success("העיבוד הושלם בהצלחה!")
 
     elif results["status"] == "error":
-        st.error(f"❌ שגיאה בעיבוד: {results.get('error', 'Unknown error')}")
+        st.error(f"שגיאה בעיבוד: {results.get('error', 'Unknown error')}")
         return
     
     tab1, tab2, tab3, tab4 = st.tabs(["נתונים מחולצים", "אימות", "מטריקות", "JSON"])
@@ -279,6 +289,8 @@ def display(results: dict):
 
 def main():
     
+    logger.info("Application started")
+
     # --- init --------------------------------
 
     st.set_page_config(
@@ -312,6 +324,8 @@ def main():
 
     
     if uploaded_file is not None:
+
+        logger.info(f"File uploaded: {uploaded_file.name} ({uploaded_file.type}, {uploaded_file.size} bytes)")
         
         col1, col2, col3 = st.columns(3)
         with col1:
@@ -324,10 +338,13 @@ def main():
         # --- preview ------------------------------------------------
 
         if uploaded_file.type.startswith('image'):
+
+            logger.info(f"Processing initiated by user for file: {uploaded_file.name}")
+            
             st.subheader("תצוגה מקדימה")
             image = Image.open(uploaded_file)
             st.image(image, caption=uploaded_file.name, use_column_width=True)
-            uploaded_file.seek(0)  # Reset file pointer
+            uploaded_file.seek(0)  
         
         # --- process --------------------------------------------------
 
