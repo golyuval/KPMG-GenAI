@@ -25,14 +25,14 @@ root.addHandler(ch)
 
 # -------- info -----------------------------------------------------
 
-fh_info = logging.FileHandler(INFO_FILE, mode="w", encoding="utf-8")
+fh_info = logging.FileHandler(INFO_FILE, mode="a", encoding="utf-8")
 fh_info.setLevel(logging.INFO)
 fh_info.setFormatter(logging.Formatter(FMT))
 root.addHandler(fh_info)
 
 # -------- error ----------------------------------------------------
 
-fh_err = logging.FileHandler(ERROR_FILE, mode="w", encoding="utf-8")
+fh_err = logging.FileHandler(ERROR_FILE, mode="a", encoding="utf-8")
 fh_err.setLevel(logging.ERROR)
 fh_err.setFormatter(logging.Formatter(FMT))
 root.addHandler(fh_err)

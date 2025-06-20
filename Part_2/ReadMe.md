@@ -69,7 +69,7 @@ INFO:     Uvicorn running on http://127.0.0.1:8000
 ### 2. Start the Frontend (New Terminal)
 
 ```bash
-python ./Part_2/Client/chat.py
+python ./Part_2/Client/app.py
 ```
 
 Expected output:
@@ -89,7 +89,7 @@ Running on public URL: https://xxxxx.gradio.live
 
 1. The chatbot will greet you and ask for your information
 
-![alt text](image-1.png)
+![alt text](Data/readme/image-1.png)
 
 2. Provide the following details when asked:
    - First name (שם פרטי)
@@ -107,25 +107,15 @@ Running on public URL: https://xxxxx.gradio.live
 2. Confirm if correct or request changes
 3. Once verified, proceed to Q&A
 
-![alt text](image-2.png)
+![alt text](Data/readme/image-2.png)
 
 ### Phase 2: Q&A
 
 Ask questions about your HMO services. The bot will provide answers based on your HMO and insurance tier.
 
-![alt text](image-3.png)
+![alt text](Data/readme/image-3.png)
 
 ## Monitoring and Debugging
-
-### Check Logs
-
-```bash
-# View info logs
-tail -f Part_2/Log/log_info.log
-
-# View error logs
-tail -f Part_2/Log/log_error.log
-```
 
 ### API Endpoints for Monitoring
 
@@ -136,7 +126,7 @@ tail -f Part_2/Log/log_error.log
 - Log error `http://localhost:8000/logs/error`
 
 
-### Unfinished 
+## Needed for production 
 - Secure routes with API key
 - Invocation of actual field validators
 - Testing caching mechanizm

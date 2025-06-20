@@ -158,7 +158,7 @@ def main():
             textbox = gr.Textbox(
                 placeholder="הקלד את הודעתך כאן…",
                 label="הודעה",
-                lines=1,            # ⇨ pressing Enter submits
+                lines=1,            
                 scale=4,
                 autofocus=True,
                 rtl=True

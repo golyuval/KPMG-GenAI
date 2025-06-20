@@ -1,0 +1,177 @@
+2025-06-20 13:09:15,138 - rag - INFO - Processed alternative_services: 3 sections
+2025-06-20 13:09:15,138 - rag - INFO - Processed communication_clinic_services: 3 sections
+2025-06-20 13:09:15,138 - rag - INFO - Processed dentel_services: 3 sections
+2025-06-20 13:09:15,138 - rag - INFO - Processed optometry_services: 3 sections
+2025-06-20 13:09:15,157 - rag - INFO - Processed pragrency_services: 3 sections
+2025-06-20 13:09:15,159 - rag - INFO - Processed workshops_services: 3 sections
+2025-06-20 13:09:15,159 - rag - INFO - Total documents processed: 6
+2025-06-20 13:09:16,785 - httpx - INFO - HTTP Request: POST https://oai-lab-test-eastus-001.openai.azure.com/openai/deployments/text-embedding-ada-002/embeddings?api-version=2025-01-01-preview "HTTP/1.1 200 OK"
+2025-06-20 13:09:17,445 - faiss.loader - INFO - Loading faiss with AVX512 support.
+2025-06-20 13:09:17,445 - faiss.loader - INFO - Could not load library with AVX512 support due to:
+ModuleNotFoundError("No module named 'faiss.swigfaiss_avx512'")
+2025-06-20 13:09:17,445 - faiss.loader - INFO - Loading faiss with AVX2 support.
+2025-06-20 13:09:17,603 - faiss.loader - INFO - Successfully loaded faiss with AVX2 support.
+2025-06-20 13:09:17,620 - faiss - INFO - Failed to load GPU Faiss: name 'GpuIndexIVFFlat' is not defined. Will not load constructor refs for GPU indexes. This is only an error if you're trying to use GPU Faiss.
+2025-06-20 13:09:17,621 - rag - INFO - RAG initialized with 33 vectors
+2025-06-20 13:09:18,340 - __main__ - INFO - HMO Chatbot backend starting up...
+2025-06-20 13:09:18,340 - __main__ - INFO - All endpoints loaded successfully
+2025-06-20 13:09:34,384 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-06-20 13:09:35,605 - httpx - INFO - HTTP Request: GET http://localhost:7860/gradio_api/startup-events "HTTP/1.1 200 OK"
+2025-06-20 13:09:37,690 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-06-20 13:09:38,814 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v3/tunnel-request "HTTP/1.1 200 OK"
+2025-06-20 13:09:39,379 - httpx - INFO - HTTP Request: GET https://cdn-media.huggingface.co/frpc-gradio-0.3/frpc_windows_amd64.exe "HTTP/1.1 200 OK"
+2025-06-20 13:09:58,190 - __main__ - INFO - Sending request to backend: yuval...
+2025-06-20 13:10:00,219 - routes - INFO - Processing request from anonymous: yuval...
+2025-06-20 13:10:00,219 - services - INFO - Starting collection phase for message: yuval...
+2025-06-20 13:10:00,219 - services - INFO - Detected language: en for collection phase
+2025-06-20 13:10:01,883 - httpx - INFO - HTTP Request: POST https://oai-lab-test-eastus-001.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2025-01-01-preview "HTTP/1.1 200 OK"
+2025-06-20 13:10:01,899 - services - INFO - Token usage - Prompt: 317, Completion: 77
+2025-06-20 13:10:01,904 - services - INFO - Collection raw output: {
+  "first_name": "yuval",
+  "last_name": "",
+  "id_number": "",
+  "gender": "",
+  "age": "",
+  "hmo_name": "",
+  "card_number": "",
+  "tier": "",
+  "assistant_message": "Please provide your last name.",
+  "collection_complete": false,
+  "verified": false
+}
+2025-06-20 13:10:01,905 - __main__ - INFO - Successfully received response from backend for user: anonymous
+2025-06-20 13:10:07,452 - __main__ - INFO - Sending request to backend: goldstein...
+2025-06-20 13:10:09,484 - routes - INFO - Processing request from anonymous: goldstein...
+2025-06-20 13:10:09,484 - services - INFO - Starting collection phase for message: goldstein...
+2025-06-20 13:10:09,484 - services - INFO - Detected language: en for collection phase
+2025-06-20 13:10:11,524 - httpx - INFO - HTTP Request: POST https://oai-lab-test-eastus-001.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2025-01-01-preview "HTTP/1.1 200 OK"
+2025-06-20 13:10:11,536 - services - INFO - Token usage - Prompt: 333, Completion: 53
+2025-06-20 13:10:11,536 - services - INFO - Collection raw output: 
+{"first_name":"yuval","last_name":"goldstein","id_number":"","gender":"","age":"","hmo_name":"","card_number":"","tier":"","assistant_message":"Please provide your ID number (9 digits).","collection_complete":false,"verified":false}
+2025-06-20 13:10:11,541 - __main__ - INFO - Successfully received response from backend for user: anonymous
+2025-06-20 13:10:14,781 - __main__ - INFO - Sending request to backend: 123123132...
+2025-06-20 13:10:16,846 - routes - INFO - Processing request from anonymous: 123123132...
+2025-06-20 13:10:16,848 - services - INFO - Starting collection phase for message: 123123132...
+2025-06-20 13:10:16,848 - services - INFO - Detected language: en for collection phase
+2025-06-20 13:10:18,507 - httpx - INFO - HTTP Request: POST https://oai-lab-test-eastus-001.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2025-01-01-preview "HTTP/1.1 200 OK"
+2025-06-20 13:10:18,523 - services - INFO - Token usage - Prompt: 353, Completion: 66
+2025-06-20 13:10:18,524 - services - INFO - Collection raw output: 
+{"first_name":"yuval","last_name":"goldstein","id_number":"123123132","gender":"","age":"","hmo_name":"","card_number":"","tier":"","assistant_message":"The ID number must be 9 digits. Please provide a valid 9-digit ID number.","collection_complete":false,"verified":false}
+2025-06-20 13:10:18,524 - __main__ - INFO - Successfully received response from backend for user: anonymous
+2025-06-20 13:10:26,950 - __main__ - INFO - Sending request to backend: 123123123...
+2025-06-20 13:10:29,014 - routes - INFO - Processing request from anonymous: 123123123...
+2025-06-20 13:10:29,014 - services - INFO - Starting collection phase for message: 123123123...
+2025-06-20 13:10:29,014 - services - INFO - Detected language: en for collection phase
+2025-06-20 13:10:30,463 - httpx - INFO - HTTP Request: POST https://oai-lab-test-eastus-001.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2025-01-01-preview "HTTP/1.1 200 OK"
+2025-06-20 13:10:30,463 - services - INFO - Token usage - Prompt: 383, Completion: 64
+2025-06-20 13:10:30,463 - services - INFO - Collection raw output: 
+  {"first_name":"yuval","last_name":"goldstein","id_number":"123123123","gender":"","age":"","hmo_name":"","card_number":"","tier":"","assistant_message":"Please provide your gender (זכר/נקבה or Male/Female).","collection_complete":false,"verified":false}
+2025-06-20 13:10:30,479 - __main__ - INFO - Successfully received response from backend for user: anonymous
+2025-06-20 13:10:49,598 - __main__ - INFO - Sending request to backend: זכר...
+2025-06-20 13:10:51,641 - routes - INFO - Processing request from anonymous: זכר...
+2025-06-20 13:10:51,641 - services - INFO - Starting collection phase for message: זכר...
+2025-06-20 13:10:51,641 - services - INFO - Detected language: he for collection phase
+2025-06-20 13:10:53,670 - httpx - INFO - HTTP Request: POST https://oai-lab-test-eastus-001.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2025-01-01-preview "HTTP/1.1 200 OK"
+2025-06-20 13:10:53,670 - services - INFO - Token usage - Prompt: 408, Completion: 101
+2025-06-20 13:10:53,670 - services - INFO - Collection raw output: 
+   	{
+  "first_name": "yuval",
+  "last_name": "goldstein",
+  "id_number": "123123123",
+  "gender": "זכר",
+  "age": "",
+  "hmo_name": "",
+  "card_number": "",
+  "tier": "",
+  "assistant_message": "אנא ספק את גילך (בין 0-120).",
+  "collection_complete": false,
+  "verified": false
+}
+2025-06-20 13:10:53,681 - __main__ - INFO - Successfully received response from backend for user: anonymous
+2025-06-20 13:10:57,557 - __main__ - INFO - Sending request to backend: 0...
+2025-06-20 13:10:59,602 - routes - INFO - Processing request from anonymous: 0...
+2025-06-20 13:10:59,602 - services - INFO - Starting collection phase for message: 0...
+2025-06-20 13:10:59,602 - services - INFO - Detected language: en for collection phase
+2025-06-20 13:11:01,731 - httpx - INFO - HTTP Request: POST https://oai-lab-test-eastus-001.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2025-01-01-preview "HTTP/1.1 200 OK"
+2025-06-20 13:11:01,827 - services - INFO - Token usage - Prompt: 431, Completion: 90
+2025-06-20 13:11:01,827 - services - INFO - Collection raw output: 
+  {"first_name": "yuval", "last_name": "goldstein", "id_number": "123123123", "gender": "זכר", "age": "0", "hmo_name": "", "card_number": "", "tier": "", "assistant_message": "Please provide your HMO (מכבי/מאוחדת/כללית).", "collection_complete": false, "verified": false}
+2025-06-20 13:11:01,828 - __main__ - INFO - Successfully received response from backend for user: anonymous
+2025-06-20 13:11:08,480 - __main__ - INFO - Sending request to backend: מכבי...
+2025-06-20 13:11:10,530 - routes - INFO - Processing request from anonymous: מכבי...
+2025-06-20 13:11:10,532 - services - INFO - Starting collection phase for message: מכבי...
+2025-06-20 13:11:10,533 - services - INFO - Detected language: he for collection phase
+2025-06-20 13:11:12,236 - httpx - INFO - HTTP Request: POST https://oai-lab-test-eastus-001.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2025-01-01-preview "HTTP/1.1 200 OK"
+2025-06-20 13:11:12,237 - services - INFO - Token usage - Prompt: 459, Completion: 73
+2025-06-20 13:11:12,237 - services - INFO - Collection raw output:  		{"first_name":"yuval","last_name":"goldstein","id_number":"123123123","gender":"זכר","age":"0","hmo_name":"מכבי","card_number":"","tier":"","assistant_message":"אנא ספק את מספר כרטיס קופה (9 ספרות).","collection_complete":false,"verified":false}
+2025-06-20 13:11:12,237 - __main__ - INFO - Successfully received response from backend for user: anonymous
+2025-06-20 13:11:18,521 - __main__ - INFO - Sending request to backend: 123456789...
+2025-06-20 13:11:20,590 - routes - INFO - Processing request from anonymous: 123456789...
+2025-06-20 13:11:20,590 - services - INFO - Starting collection phase for message: 123456789...
+2025-06-20 13:11:20,590 - services - INFO - Detected language: en for collection phase
+2025-06-20 13:11:22,249 - httpx - INFO - HTTP Request: POST https://oai-lab-test-eastus-001.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2025-01-01-preview "HTTP/1.1 200 OK"
+2025-06-20 13:11:22,265 - services - INFO - Token usage - Prompt: 484, Completion: 77
+2025-06-20 13:11:22,265 - services - INFO - Collection raw output:  	{"first_name":"yuval","last_name":"goldstein","id_number":"123123123","gender":"זכר","age":"0","hmo_name":"מכבי","card_number":"123456789","tier":"","assistant_message":"Please provide your insurance tier (זהב/כסף/ארד).","collection_complete":false,"verified":false}
+2025-06-20 13:11:22,275 - __main__ - INFO - Successfully received response from backend for user: anonymous
+2025-06-20 13:11:28,906 - __main__ - INFO - Sending request to backend: זהב...
+2025-06-20 13:11:30,960 - routes - INFO - Processing request from anonymous: זהב...
+2025-06-20 13:11:30,960 - services - INFO - Starting collection phase for message: זהב...
+2025-06-20 13:11:30,960 - services - INFO - Detected language: he for collection phase
+2025-06-20 13:11:33,127 - httpx - INFO - HTTP Request: POST https://oai-lab-test-eastus-001.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2025-01-01-preview "HTTP/1.1 200 OK"
+2025-06-20 13:11:33,127 - services - INFO - Token usage - Prompt: 509, Completion: 176
+2025-06-20 13:11:33,127 - services - INFO - Collection raw output: {
+  "first_name": "yuval",
+  "last_name": "goldstein",
+  "id_number": "123123123",
+  "gender": "זכר",
+  "age": "0",
+  "hmo_name": "מכבי",
+  "card_number": "123456789",
+  "tier": "זהב",
+  "assistant_message": "המידע שנאסף הוא:\nשם פרטי: yuval\nשם משפחה: goldstein\nמספר זהות: 123123123\nמין: זכר\nגיל: 0\nקופת חולים: מכבי\nמספר כרטיס קופה: 123456789\nרמת ביטוח: זהב\n\nאנא אשר אם כל המידע נכון.",
+  "collection_complete": true,
+  "verified": false
+}
+2025-06-20 13:11:33,127 - __main__ - INFO - User info collected successfully
+2025-06-20 13:11:33,127 - __main__ - INFO - Successfully received response from backend for user: 123123123
+2025-06-20 13:11:41,715 - __main__ - INFO - Sending request to backend: נכון...
+2025-06-20 13:11:43,790 - routes - INFO - Processing request from 123123123: נכון...
+2025-06-20 13:11:43,790 - services - INFO - Starting verification phase for user: 123123123
+2025-06-20 13:11:43,790 - services - INFO - Using language: he for verification phase
+2025-06-20 13:11:49,499 - httpx - INFO - HTTP Request: POST https://oai-lab-test-eastus-001.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2025-01-01-preview "HTTP/1.1 200 OK"
+2025-06-20 13:11:49,503 - services - INFO - Verification raw output: {
+  "first_name": "yuval",
+  "last_name": "goldstein",
+  "id_number": "123123123",
+  "gender": "זכר",
+  "age": "0",
+  "hmo_name": "מכבי",
+  "card_number": "123456789",
+  "tier": "זהב",
+  "assistant_message": "מעולה! עכשיו אני יכול לעזור לך עם שאלות על שירותי הבריאות שלך.",
+  "collection_complete": true,
+  "verified": true
+}
+2025-06-20 13:11:49,503 - __main__ - INFO - User info collected successfully
+2025-06-20 13:11:49,503 - __main__ - INFO - Successfully received response from backend for user: 123123123
+2025-06-20 13:12:05,836 - __main__ - INFO - Sending request to backend: what can i get?...
+2025-06-20 13:12:07,888 - routes - INFO - Processing request from 123123123: what can i get?...
+2025-06-20 13:12:07,888 - routes - INFO - Created new session for 123123123
+2025-06-20 13:12:08,490 - httpx - INFO - HTTP Request: POST https://oai-lab-test-eastus-001.openai.azure.com/openai/deployments/text-embedding-ada-002/embeddings?api-version=2025-01-01-preview "HTTP/1.1 200 OK"
+2025-06-20 13:12:08,511 - rag - INFO - FAISS index built successfully with 33 vectors
+2025-06-20 13:12:08,675 - httpx - INFO - HTTP Request: POST https://oai-lab-test-eastus-001.openai.azure.com/openai/deployments/text-embedding-ada-002/embeddings?api-version=2025-01-01-preview "HTTP/1.1 200 OK"
+2025-06-20 13:12:12,051 - httpx - INFO - HTTP Request: POST https://oai-lab-test-eastus-001.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2025-01-01-preview "HTTP/1.1 200 OK"
+2025-06-20 13:12:12,059 - routes - INFO - Retrieval quality - Avg score: 0.540
+2025-06-20 13:12:12,063 - __main__ - INFO - User info collected successfully
+2025-06-20 13:12:12,063 - __main__ - INFO - Successfully received response from backend for user: 123123123
+2025-06-20 13:12:48,060 - __main__ - INFO - Sending request to backend: alternative services...
+2025-06-20 13:12:50,110 - routes - INFO - Processing request from 123123123: alternative services...
+2025-06-20 13:12:50,768 - httpx - INFO - HTTP Request: POST https://oai-lab-test-eastus-001.openai.azure.com/openai/deployments/text-embedding-ada-002/embeddings?api-version=2025-01-01-preview "HTTP/1.1 200 OK"
+2025-06-20 13:12:50,772 - rag - INFO - FAISS index built successfully with 33 vectors
+2025-06-20 13:12:51,780 - httpx - INFO - HTTP Request: POST https://oai-lab-test-eastus-001.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2025-01-01-preview "HTTP/1.1 200 OK"
+2025-06-20 13:12:51,971 - httpx - INFO - HTTP Request: POST https://oai-lab-test-eastus-001.openai.azure.com/openai/deployments/text-embedding-ada-002/embeddings?api-version=2025-01-01-preview "HTTP/1.1 200 OK"
+2025-06-20 13:12:53,901 - httpx - INFO - HTTP Request: POST https://oai-lab-test-eastus-001.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2025-01-01-preview "HTTP/1.1 200 OK"
+2025-06-20 13:12:53,903 - routes - INFO - Retrieval quality - Avg score: 0.467
+2025-06-20 13:12:53,905 - __main__ - INFO - User info collected successfully
+2025-06-20 13:12:53,905 - __main__ - INFO - Successfully received response from backend for user: 123123123
+2025-06-20 13:13:33,840 - routes - INFO - Checking log file at: C:\Users\97252\Desktop\yuval\Work\KPMG-GenAI\Part_2\Log\log_info.log

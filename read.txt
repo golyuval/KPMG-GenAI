@@ -1,1 +1,0 @@
-1. must not maintain user session data - but what about session number (no information about the) ?
