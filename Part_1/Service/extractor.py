@@ -26,7 +26,9 @@ class Extractor:
         logger.info("Extraction Service initialized successfully")
     
     def extract_fields(self, ocr_data: Dict, retry_count: int = 0) -> Dict:
-   
+    
+        # -------- build prompt --------------------------------------
+
         logger.info(f"Starting field extraction (attempt {retry_count + 1})")
         logger.debug(f"OCR data contains {len(ocr_data.get('full_text', ''))} characters")
 
@@ -36,9 +38,12 @@ class Extractor:
         logger.info("Sending extraction request to GPT-4o")
         logger.debug(f"Using model: {self.name}")
         
-        # -------- infer --------------------------------------
-
+        # -------- extract --------------------------------------
+        
         try :
+
+            # -------- send extraction request --------------------------------------
+
             response = self.client.chat.completions.create(
                 model=self.name,
                 messages=[
@@ -53,9 +58,13 @@ class Extractor:
             logger.info("Received response from GPT-4o")
             logger.debug(f"Response tokens used: {response.usage.total_tokens if hasattr(response, 'usage') else 'N/A'}")
             
+            # -------- parse response to json --------------------------------------
+
             extracted = json.loads(response.choices[0].message.content)
             logger.info("Successfully parsed JSON response")
             
+            # -------- clean response --------------------------------------
+
             cleaned = self.clean(extracted)
             logger.info("Data cleaning completed successfully")
             

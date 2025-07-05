@@ -3,7 +3,6 @@ from typing import Optional
 from datetime import datetime
 import re
 
-
 class Date(BaseModel):
 
     day: str = ""

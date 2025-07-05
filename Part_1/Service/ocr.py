@@ -68,7 +68,7 @@ class OCR:
             "lines": []
         }
         
-        # ------- lines ---------------------------
+        # ------- lines | pages | text ----------------------
 
         for page_idx, page in enumerate(result.pages):
             
@@ -77,6 +77,9 @@ class OCR:
             
             if hasattr(page, 'lines') and page.lines:
                 for line in page.lines:
+
+                    # ------- process lines ----------------
+                    
                     line_text = line.content
                     page_text += line_text + "\n"
                     
@@ -85,18 +88,25 @@ class OCR:
                         "page": page_idx + 1,
                         "bounding_box": self.bounding_box(line)
                     }
+
+                    # ------- update extracted lines ----------------
+
                     page_lines.append(line_info)
                     extracted["lines"].append(line_info)
             
+            # ------- update extracted pages ----------------
+
             extracted["pages"].append({
                 "page_number": page_idx + 1,
                 "text": page_text,
                 "lines": page_lines
             })
+
+            # ------- update extracted text ----------------
             
             extracted["full_text"] += page_text + "\n"
         
-        # ------- tables ---------------------------
+        # ------- tables ------------------------------------
 
         if hasattr(result, 'tables') and result.tables:
             for table_idx, table in enumerate(result.tables):
@@ -116,17 +126,21 @@ class OCR:
                         "value": kv_pair.value.content if kv_pair.value else ""
                     })
         
-        logger.info(f"Extracted {len(extracted['lines'])} lines, {len(extracted['tables'])} tables")
+        # ------- log results -------------------------------
+
+        extracted_lines_count = len(extracted.get('lines', []))
+        extracted_tables_count = len(extracted.get('tables', []))
+        extracted_kv_pairs_count = len(extracted.get('key_value_pairs', []))
+        
+        logger.info(f"Extracted {extracted_lines_count} lines, {extracted_tables_count} tables, {extracted_kv_pairs_count} key-value pairs")
         
         return extracted
     
     # ---------- helpers ---------------------------------------------------
     
     def bounding_box(self, element) -> List[float]:
-
         if hasattr(element, 'polygon') and element.polygon:
-            return [float(point) for point in element.polygon] + [float(point) for point in element.polygon]
-        
+            return [float(point) for point in element.polygon]
         return []
     
     def table(self, table) -> List[List[str]]:

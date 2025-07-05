@@ -39,6 +39,8 @@ class Validator:
             'jobType'
         ]
 
+        self.address_fields = ['street', 'houseNumber', 'entrance', 'apartment', 'city', 'postalCode', 'poBox']
+
         logger.info("Validation Service initialized")
 
 
@@ -83,14 +85,6 @@ class Validator:
         results["summary"]["filled_fields"] = completeness["filled_fields"]
         results["summary"]["missing_required_fields"] = completeness["missing_required"]
         logger.info(f"Completeness score: {completeness['score']:.2%}")
-
-        # ------ accuracy -------------------------
-
-        if ground_truth:
-            accuracy = self.accuracy(extracted_data, ground_truth)
-            results["accuracy_score"] = accuracy["overall_accuracy"]
-            results["field_accuracy"] = accuracy["field_accuracy"]
-            logger.info(f"Accuracy score: {accuracy['overall_accuracy']:.2%}")
         
         # ------ confidence -------------------------
 
@@ -101,7 +95,6 @@ class Validator:
         
         section_metrics = self.section_metrics(extracted_data)
         results["section_metrics"] = section_metrics
-        
         
         # ------ overall -------------------------
 
@@ -117,8 +110,9 @@ class Validator:
     
     def valid_schema(self, data: Dict) -> Dict:
 
-        errors = []
+        # ------ actual schema ------------------------------------
 
+        errors = []
         expected_fields = [
             'lastName',
             'firstName',
@@ -141,18 +135,19 @@ class Validator:
             'medicalInstitutionFields'
         ]
         
+        # ------ missing fields ------------------------------------
+
         for field in expected_fields:
             if field not in data:
                 errors.append(f"Missing required field: {field}")
         
-        # Check nested structures
+        # ------ nested structures ------------------------------------
+
         if 'address' in data and isinstance(data['address'], dict):
-            address_fields = ['street', 'houseNumber', 'entrance', 'apartment', 'city', 'postalCode', 'poBox']
-            for field in address_fields:
+            for field in self.address_fields:
                 if field not in data['address']:
                     errors.append(f"Missing address field: {field}")
         
-        # Check date structures
         for date_field in self.date_fields:
             if date_field in data and isinstance(data[date_field], dict):
                 for part in ['day', 'month', 'year']:

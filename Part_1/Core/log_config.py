@@ -2,30 +2,52 @@ import logging
 import os
 from datetime import datetime
 from pathlib import Path
+from logging.handlers import RotatingFileHandler
 
 
+def setup_logging(log_dir=None, max_bytes=5*1024*1024, backup_count=5):
 
-def setup_logging(log_dir="Log"):
+    # ------ directory setup -------------------------------
+
+    if log_dir is None:
+        log_dir = os.environ.get("LOG_DIR", os.path.join("Part_1", "Log"))
 
     Path(log_dir).mkdir(exist_ok=True)
     
+    # ------ files setup -------------------------------
+
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     info_log_file = os.path.join(log_dir, f"info_{timestamp}.log")
     error_log_file = os.path.join(log_dir, f"error_{timestamp}.log")
 
+    # ------ logger setup -------------------------------
+
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
-    logger.handlers = []
+
+    # ------ prevent duplicate handlers -------------------------------
+
+    if logger.handlers:
+        logging.warning("setup_logging called multiple times; handlers already exist. Skipping handler setup.")
+        return logger
 
     # ------ formatters -------------------------------
 
-    detailed_formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(funcName)s() - %(message)s',
+    class TruncatingFormatter(logging.Formatter):
+        def format(self, record):
+            record.name = (record.name[:20]) if len(record.name) > 20 else record.name
+            record.filename = (record.filename[:20]) if len(record.filename) > 20 else record.filename
+            record.funcName = (record.funcName[:20]) if len(record.funcName) > 20 else record.funcName
+            record.file_func_line = f"{record.filename} : {record.funcName} : {record.lineno}"[:49].ljust(49)
+            return super().format(record)
+
+    detailed_formatter = TruncatingFormatter(
+        '%(asctime)s - %(levelname)-8s - %(file_func_line)s - %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S'
     )
     
-    simple_formatter = logging.Formatter(
-        '%(asctime)s - %(levelname)s - %(message)s',
+    simple_formatter = TruncatingFormatter(
+        '%(asctime)s - %(levelname)-8s - %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S'
     )
        
@@ -35,16 +57,16 @@ def setup_logging(log_dir="Log"):
     console_handler.setLevel(logging.INFO)
     console_handler.setFormatter(simple_formatter)
     
-    # ------ info handler -------------------------------
+    # ------ info handler with rotation -------------------------------
     
-    info_file_handler = logging.FileHandler(info_log_file, encoding='utf-8')
+    info_file_handler = RotatingFileHandler(info_log_file, maxBytes=max_bytes, backupCount=backup_count, encoding='utf-8')
     info_file_handler.setLevel(logging.INFO)
     info_file_handler.setFormatter(detailed_formatter)
     info_file_handler.addFilter(lambda record: record.levelno < logging.ERROR)
     
-    # ------ error handler -------------------------------
+    # ------ error handler with rotation -------------------------------
     
-    error_file_handler = logging.FileHandler(error_log_file, encoding='utf-8')
+    error_file_handler = RotatingFileHandler(error_log_file, maxBytes=max_bytes, backupCount=backup_count, encoding='utf-8')
     error_file_handler.setLevel(logging.ERROR)
     error_file_handler.setFormatter(detailed_formatter)
     
@@ -57,5 +79,4 @@ def setup_logging(log_dir="Log"):
     return logger
 
 def get_module_logger(module_name):
-    
     return logging.getLogger(module_name)

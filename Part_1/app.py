@@ -1,26 +1,23 @@
-import streamlit as st
 import json
-import logging
 from datetime import datetime
 import pandas as pd
 from pathlib import Path
-import base64
-import io
 from PIL import Image
-
+import streamlit as st
 
 from Service.ocr import OCR
 from Service.extractor import Extractor
 from Service.validator import Validator
+
 import Core.config as config
+from Core.log_config import get_module_logger, setup_logging
+
+# Initialize robust logging for production
+setup_logging()
 
 # ------------- logger ----------------------------------------------
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+logger = get_module_logger(__name__)
 
 # ------------- resources ----------------------------------------------
 
@@ -98,6 +95,7 @@ def process(file_content: bytes, file_type: str, filename: str):
         st.error(f"שגיאה בעיבוד המסמך: {str(e)}")
 
     logger.info(f"Document processing completed for {filename} with status: {results['status']}")
+
     return results
 
 def display(results: dict):
@@ -369,7 +367,7 @@ def main():
     
     logger.info("Application started")
 
-    # --- init --------------------------------
+    # --- page configuration ----------------------------------------
 
     st.set_page_config(
         page_title="מערכת חילוץ טפסים",
@@ -384,27 +382,30 @@ def main():
         }
     """, unsafe_allow_html=True)
 
-    # --- main page --------------------------------
+    # --- headline --------------------------------------------------
 
     st.title("מערכת חילוץ טפסים - ביטוח לאומי")
     st.markdown("מערכת לחילוץ אוטומטי של מידע מטפסי ביטוח לאומי באמצעות AI")
     st.header("העלאת מסמך")
 
-    st.markdown("</div>", unsafe_allow_html=True)  # Close styled di
+    st.markdown("</div>", unsafe_allow_html=True)  
     
-    # --- uploader --------------------------------
+    # --- uploader --------------------------------------------------
 
     uploaded_file = st.file_uploader(
-        "בחר קובץ PDF",
+        "בחר קובץ (PDF, JPG, JPEG, PNG)",
         type=['pdf', 'jpg', 'jpeg', 'png'],
         help="גרור קובץ או לחץ לבחירה"
     )
 
-    
+    # --- process ---------------------------------------------------
+
     if uploaded_file is not None:
 
         logger.info(f"File uploaded: {uploaded_file.name} ({uploaded_file.type}, {uploaded_file.size} bytes)")
         
+        # --- file metadata ---------------------------------
+
         col1, col2, col3 = st.columns(3)
         with col1:
             st.metric("שם קובץ", uploaded_file.name)
@@ -413,7 +414,7 @@ def main():
         with col3:
             st.metric("גודל", f"{uploaded_file.size / 1024:.1f} KB")
         
-        # --- preview ------------------------------------------------
+        # --- file preview ----------------------------------
 
         if uploaded_file.type.startswith('image'):
 
@@ -424,7 +425,7 @@ def main():
             st.image(image, caption=uploaded_file.name, use_column_width=True)
             uploaded_file.seek(0)  
         
-        # --- process --------------------------------------------------
+        # --- process button ---------------------------------
 
         if st.button("התחל עיבוד", type="primary", use_container_width=True):
             
@@ -437,40 +438,26 @@ def main():
 
             results = process(file_content, file_type, uploaded_file.name)
             
-            # --- process ----------------------
+            # --- store results ----------------------
 
-            # if ground_truth_file and results["status"] == "completed":
-            #     try:
-            #         ground_truth = json.load(ground_truth_file)
-            #         validation_service = init_resources()[2]
-            #         accuracy_results = validation_service._calculate_accuracy(
-            #             results["extracted_data"], 
-            #             ground_truth
-            #         )
-            #         results["validation"]["accuracy_score"] = accuracy_results["overall_accuracy"]
-            #         results["validation"]["field_accuracy"] = accuracy_results["field_accuracy"]
-            #         st.success(f"דיוק כללי: {accuracy_results['overall_accuracy']:.1%}")
-
-            #     except Exception as e:
-            #         st.error(f"שגיאה בחישוב דיוק: {str(e)}")
-            
-            # Store results in session state
             st.session_state['last_results'] = results
             
-            # Display results
+            # --- display results ----------------------
+
             display(results)
             
             with st.expander("מידע נוסף"):
 
                 st.json(results)
 
+    # --- last results ----------------------------------------------
     
-    # Display last results if available
     elif 'last_results' in st.session_state:
         st.info("מציג תוצאות אחרונות")
         display(st.session_state['last_results'])
     
-    # Footer
+    # --- footer ----------------------------------------------------
+    
     st.markdown("---")
    
 if __name__ == "__main__":
