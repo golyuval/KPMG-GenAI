@@ -194,3 +194,82 @@ ModuleNotFoundError("No module named 'faiss.swigfaiss_avx512'")
 2025-06-20 18:58:37,654 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
 2025-06-20 18:58:38,394 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
 2025-06-20 18:58:39,566 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v3/tunnel-request "HTTP/1.1 200 OK"
+2025-07-01 22:08:46,039 - rag - INFO - Processed alternative_services: 3 sections
+2025-07-01 22:08:46,039 - rag - INFO - Processed communication_clinic_services: 3 sections
+2025-07-01 22:08:46,039 - rag - INFO - Processed dentel_services: 3 sections
+2025-07-01 22:08:46,057 - rag - INFO - Processed optometry_services: 3 sections
+2025-07-01 22:08:46,061 - rag - INFO - Processed pragrency_services: 3 sections
+2025-07-01 22:08:46,061 - rag - INFO - Processed workshops_services: 3 sections
+2025-07-01 22:08:46,061 - rag - INFO - Total documents processed: 6
+2025-07-01 22:08:49,334 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
+2025-07-01 22:08:49,669 - httpx - INFO - HTTP Request: POST https://oai-lab-test-eastus-001.openai.azure.com/openai/deployments/text-embedding-ada-002/embeddings?api-version=2025-01-01-preview "HTTP/1.1 200 OK"
+2025-07-01 22:08:50,352 - faiss.loader - INFO - Loading faiss with AVX512 support.
+2025-07-01 22:08:50,352 - faiss.loader - INFO - Could not load library with AVX512 support due to:
+ModuleNotFoundError("No module named 'faiss.swigfaiss_avx512'")
+2025-07-01 22:08:50,352 - faiss.loader - INFO - Loading faiss with AVX2 support.
+2025-07-01 22:08:50,457 - faiss.loader - INFO - Successfully loaded faiss with AVX2 support.
+2025-07-01 22:08:50,488 - faiss - INFO - Failed to load GPU Faiss: name 'GpuIndexIVFFlat' is not defined. Will not load constructor refs for GPU indexes. This is only an error if you're trying to use GPU Faiss.
+2025-07-01 22:08:50,490 - rag - INFO - RAG initialized with 33 vectors
+2025-07-01 22:08:50,763 - httpx - INFO - HTTP Request: GET http://localhost:7860/gradio_api/startup-events "HTTP/1.1 200 OK"
+2025-07-01 22:08:52,859 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
+2025-07-01 22:08:54,029 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v3/tunnel-request "HTTP/1.1 200 OK"
+2025-07-01 22:08:54,474 - httpx - INFO - HTTP Request: GET https://cdn-media.huggingface.co/frpc-gradio-0.3/frpc_windows_amd64.exe "HTTP/1.1 200 OK"
+2025-07-01 22:09:33,352 - __main__ - INFO - Sending request to backend: dlskfsl...
+2025-07-01 22:09:35,400 - routes - INFO - Processing request from anonymous: dlskfsl...
+2025-07-01 22:09:35,405 - services - INFO - Starting collection phase for message: dlskfsl...
+2025-07-01 22:09:35,405 - services - INFO - COLLECT prompt:
+
+#Role: 
+You are a helpful assistant collecting user information for Israeli health insurance services. 
+
+#Context: 
+You need to collect the following information from the user :
+- שם פרטי (First Name)
+- שם משפחה (Last Name) 
+- מספר זהות (ID Number) - must be 9 digits
+- מין (Gender) - זכר/נקבה or Male/Female
+- גיל (Age) - between 0-120
+- קופת חולים (HMO) - מכבי/מאוחדת/כללית
+- מספר כרטיס קופה (HMO Card Number) - 9 digits
+- רמת ביטוח (Insurance Tier) - זהב/כסף/ארד
+
+#Format:
+(CRITICAL) you must respond with the following json format {
+  "first_name": str,
+  "last_name": str,
+  "id_number": str,
+  "gender": str,
+  "age": str,
+  "hmo_name": str,
+  "card_number": str,
+  "tier": str,
+  "assistant_message": str,
+  "collection_complete": bool,
+  "verified": bool
+}
+
+Put your string response in <assistant_message>.
+Attach the user answers to the perfect <key> in the json.
+When ALL user information is filled mark <collection_complete> = True, then express the information gathered (each field seperated by 
+
+) and ask for approval in <assistant_message>.
+
+
+
+Answer in English only.
+2025-07-01 22:09:36,864 - httpx - INFO - HTTP Request: POST https://oai-lab-test-eastus-001.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2025-01-01-preview "HTTP/1.1 200 OK"
+2025-07-01 22:09:36,893 - services - INFO - Token usage - Prompt: 323, Completion: 74
+2025-07-01 22:09:36,893 - services - INFO - Collection raw output: {
+  "first_name": "",
+  "last_name": "",
+  "id_number": "",
+  "gender": "",
+  "age": "",
+  "hmo_name": "",
+  "card_number": "",
+  "tier": "",
+  "assistant_message": "Please provide your first name.",
+  "collection_complete": false,
+  "verified": false
+}
+2025-07-01 22:09:36,895 - __main__ - INFO - Successfully received response from backend for user: anonymous
