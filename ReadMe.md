@@ -10,8 +10,12 @@ This repository contains my solution for the KPMG GenAI Developer Assessment.
 ### [Part 1: Form Extraction System](./Part_1/README.md)
 AI-powered extraction of data from Israeli National Insurance forms using Azure Document Intelligence and GPT-4o.
 
+![alt text](./Data/phase1_pics/KPMG-part1.png)
+
 ### [Part 2: Healthcare Chatbot](./Part_2/README.md)
 Microservice-based chatbot for Israeli HMO healthcare information using FastAPI and RAG.
+
+![alt text](./Data/phase2_pics/KPMG-part2.png)
 
 ## Quick Start
 

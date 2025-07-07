@@ -194,3 +194,24 @@ ModuleNotFoundError("No module named 'faiss.swigfaiss_avx512'")
 2025-06-20 18:58:37,654 - httpx - INFO - HTTP Request: GET https://api.gradio.app/pkg-version "HTTP/1.1 200 OK"
 2025-06-20 18:58:38,394 - httpx - INFO - HTTP Request: HEAD http://localhost:7860/ "HTTP/1.1 200 OK"
 2025-06-20 18:58:39,566 - httpx - INFO - HTTP Request: GET https://api.gradio.app/v3/tunnel-request "HTTP/1.1 200 OK"
+2025-07-07 14:25:14,952 - rag - INFO - Processed alternative_services: 3 sections
+2025-07-07 14:25:14,954 - rag - INFO - Processed communication_clinic_services: 3 sections
+2025-07-07 14:25:14,969 - rag - INFO - Processed dentel_services: 3 sections
+2025-07-07 14:25:14,976 - rag - INFO - Processed optometry_services: 3 sections
+2025-07-07 14:25:14,985 - rag - INFO - Processed pragrency_services: 3 sections
+2025-07-07 14:25:14,994 - rag - INFO - Processed workshops_services: 3 sections
+2025-07-07 14:25:15,003 - rag - INFO - Processed אופטומטריה: 3 sections
+2025-07-07 14:25:15,003 - rag - INFO - Processed הריון: 3 sections
+2025-07-07 14:25:15,015 - rag - INFO - Processed מרפאות שיניים: 3 sections
+2025-07-07 14:25:15,021 - rag - INFO - Processed מרפאות תקשורת: 3 sections
+2025-07-07 14:25:15,028 - rag - INFO - Processed סדנאות בריאות: 3 sections
+2025-07-07 14:25:15,039 - rag - INFO - Processed רפואה משלימה: 3 sections
+2025-07-07 14:25:15,039 - rag - INFO - Total documents processed: 12
+2025-07-07 14:25:18,599 - httpx - INFO - HTTP Request: POST https://oai-lab-test-eastus-001.openai.azure.com/openai/deployments/text-embedding-ada-002/embeddings?api-version=2025-01-01-preview "HTTP/1.1 200 OK"
+2025-07-07 14:25:20,044 - faiss.loader - INFO - Loading faiss with AVX512 support.
+2025-07-07 14:25:20,044 - faiss.loader - INFO - Could not load library with AVX512 support due to:
+ModuleNotFoundError("No module named 'faiss.swigfaiss_avx512'")
+2025-07-07 14:25:20,046 - faiss.loader - INFO - Loading faiss with AVX2 support.
+2025-07-07 14:25:20,114 - faiss.loader - INFO - Successfully loaded faiss with AVX2 support.
+2025-07-07 14:25:20,122 - faiss - INFO - Failed to load GPU Faiss: name 'GpuIndexIVFFlat' is not defined. Will not load constructor refs for GPU indexes. This is only an error if you're trying to use GPU Faiss.
+2025-07-07 14:25:20,132 - rag - INFO - RAG initialized with 66 vectors
