@@ -13,7 +13,7 @@ sys.path.append(str(Path(__file__).parent.parent.parent))
 from Server.app import app
 from Server.services import validate_input, validate_user_info, cleanup_old_sessions, session_chains, session_last_access
 from Server.rag import RAG
-from Core import config
+from Part_2.Server import config
 
 client = TestClient(app)
 

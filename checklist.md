@@ -1,3 +1,30 @@
+# Project File Review Checklist
+
+Use the sections below to track which files have been fully reviewed/refactored (✅ Done Files) and which are pending walkthrough or review (📂 Files to Walk Through). Move files between sections as you progress.
+
+---
+
+✅ **Done Files**
+- Part_2/Client/app.py
+- Part_2/Client/config.py
+- Part_2/Core/logger.py
+
+---
+
+📂 **Files to Walk Through**
+- Part_2/Server/app.py
+- Part_2/Server/routes.py
+- Part_2/Server/services.py
+- Part_2/Server/rag.py
+- Part_2/Server/schemas.py
+- Part_2/Server/config.py
+- Part_2/Test/test.py
+- Part_2/interview_prep.md
+- Part_2/ReadMe.md
+- Part_2/requirements.txt
+
+---
+
 ## Interview Checklist
 
 ### Project Flow

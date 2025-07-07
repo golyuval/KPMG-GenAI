@@ -1,12 +1,13 @@
+from pathlib import Path
 import gradio as gr
 import requests
 import os
 import sys
 from datetime import datetime
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from Core import config
-from Core.logger_setup import get_logger
+sys.path.append(str(Path(__file__).parent.parent))
+from Core.logger import get_logger
+from config import chatbot_server_endpoint
 
 # ------------- logger ----------------------------------------------
 
@@ -26,12 +27,15 @@ def talk(user_msg, history, user_info_state):
         # ------ prepare payload ---------------------------------------------
 
         state = {"history": [], "user_info": user_info_state}
-        
-        for user, assistant in (history or []):
-            if user:  
-                state["history"].append({"role": "user", "content": user})
-                state["history"].append({"role": "assistant", "content": assistant})
-        
+        for msg in (history or []):
+            if msg["role"] == "user":
+                state["history"].append({"role": "user", "content": msg["content"]})
+            elif msg["role"] == "assistant":
+                state["history"].append({"role": "assistant", "content": msg["content"]})
+
+        # Ensure user_info is not None
+        if state["user_info"] is None:
+            state["user_info"] = {"verified": False, "collection_complete": False}
 
         payload = {
             "history": state["history"],
@@ -40,10 +44,8 @@ def talk(user_msg, history, user_info_state):
         }
         
         logger.info(f"Sending request to backend: {user_msg[:50]}...")
-        
-        # ------ call server ---------------------------------------------
-
-        response = requests.post(config.chatbot_server_endpoint, json=payload, timeout=30)
+        logger.info(f"DEBUG CLIENT: Sending user_info_state: {user_info_state}")
+        response = requests.post(chatbot_server_endpoint, json=payload, timeout=30)
         response.raise_for_status()
         data = response.json()
         
@@ -52,12 +54,16 @@ def talk(user_msg, history, user_info_state):
         if data.get("user_info"):
             user_info_state = data["user_info"]
             logger.info("User info collected successfully")
-        
+            logger.info(f"DEBUG CLIENT: Received user_info: {user_info_state}")
+        else:
+            logger.info("DEBUG CLIENT: No user_info in response")
+
         assistant_msg = data.get("assistant_msg", "מצטער, לא קיבלתי תשובה מהשרת.")
-        new_history = (history or []) + [(user_msg, assistant_msg)]
-        
+        new_history = (history or []) + [
+            {"role": "user", "content": user_msg},
+            {"role": "assistant", "content": assistant_msg}
+        ]
         logger.info(f"Successfully received response from backend for user: {user_info_state.get('id_number', 'anonymous') if user_info_state else 'anonymous'}")
-        
         return new_history, "", user_info_state
     
     # ------ errors ---------------------------------------------
@@ -65,94 +71,106 @@ def talk(user_msg, history, user_info_state):
     except requests.exceptions.Timeout:
         logger.error("Request timeout")
         error_msg = "הבקשה לקחה יותר מדי זמן. אנא נסה שוב."
-        new_history = (history or []) + [(user_msg, error_msg)]
+        new_history = (history or []) + [
+            {"role": "user", "content": user_msg},
+            {"role": "assistant", "content": error_msg}
+        ]
         return new_history, "", user_info_state
-        
+    
     except requests.exceptions.ConnectionError:
         logger.error("Connection error to backend")
         error_msg = "לא ניתן להתחבר לשרת. אנא וודא שהשרת פועל."
-        new_history = (history or []) + [(user_msg, error_msg)]
+        new_history = (history or []) + [
+            {"role": "user", "content": user_msg},
+            {"role": "assistant", "content": error_msg}
+        ]
         return new_history, "", user_info_state
-        
+    
     except requests.exceptions.RequestException as e:
         logger.error(f"Backend error: {str(e)}")
         error_msg = "מצטער, יש בעיה בחיבור לשרת. אנא נסה שוב."
-        new_history = (history or []) + [(user_msg, error_msg)]
+        new_history = (history or []) + [
+            {"role": "user", "content": user_msg},
+            {"role": "assistant", "content": error_msg}
+        ]
         return new_history, "", user_info_state
-        
+    
     except Exception as e:
         logger.error(f"Unexpected error: {str(e)}")
         error_msg = "אירעה שגיאה לא צפויה. אנא נסה שוב."
-        new_history = (history or []) + [(user_msg, error_msg)]
+        new_history = (history or []) + [
+            {"role": "user", "content": user_msg},
+            {"role": "assistant", "content": error_msg}
+        ]
         return new_history, "", user_info_state
 
 # ------------- main ui ---------------------------------------------
 
 def main():
+
     css = """
-    /* Default RTL layout for the entire app */
+
     html, body, .gradio-container { direction: rtl; }
 
-    /* Center only the header and subheader */
     #app-header, #app-subheader { text-align: center; }
-
-    /* Phase indicator */
-        .phase-indicator {
-            text-align: center;
-            padding: 12px;
-            margin: 10px 0;
-            border-radius: 8px;
-            font-weight: bold;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
-
-        }
-
-    /* Align footer and examples text to the right */
-    .footer { direction: rtl; text-align: right; }
+    
+    .phase-indicator {
+        text-align: center;
+        padding: 12px;
+        margin: 10px 0;
+        border-radius: 8px;
+        font-weight: bold;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        background-color: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeaa7;
+    }
+    
+    .footer { 
+     direction: rtl; 
+     text-align: right; }
     """
 
     with gr.Blocks(title="KPMG Chatbot Alpha",
                    theme=gr.themes.Soft(),
                    css=css) as demo:
 
-        # ---------- Header --------------------------------------------------
+        
+        # ---------- State Section ---------------------------------------------------
+
+        user_info_state = gr.State({"verified": False, "collection_complete": False})
+        session_id = gr.State("")
+
+        # ---------- UI Section ------------------------------------------------------
+
+
+        # ---- Header -------------------------
 
         gr.Markdown("# צ'אטבוט ביטוח בריאות - KPMG", elem_id="app-header")
-        gr.Markdown("### מערכת חכמה למתן מידע על שירותי בריאות בקופות החולים",
-                    elem_id="app-subheader")
+        gr.Markdown("### מערכת חכמה למתן מידע על שירותי בריאות בקופות החולים", elem_id="app-subheader")
 
-        # ---------- State ---------------------------------------------------
-
-        user_info_state = gr.State(None)
-
-        # ---------- Phase Indicator -----------------------------------------
+        # ---- Phase Indicator ----------------
 
         phase_indicator = gr.HTML(
             value='<div class="phase-indicator collection-phase">'
                   'שלב 1: איסוף פרטים אישיים</div>'
         )
 
-        # ---------- Chatbot -------------------------------------------------
+        # ---- Chat ---------------------------
         
-        initial_history = [(
-                "",
-                "שלום! 👋 אני העוזר הדיגיטלי שלך לשירותי ביטוח בריאות.\n"
-                "כדי שאוכל לתת לך מידע מדויק על הזכויות שלך, אני צריך לאסוף כמה פרטים.\n"
-                "בוא נתחיל, מה שמך הפרטי?"
-            )]
-        
+        initial_history = [
+            {"role": "assistant", "content": "שלום! 👋 אני העוזר הדיגיטלי שלך לשירותי ביטוח בריאות.\nכדי שאוכל לתת לך מידע מדויק על הזכויות שלך, אני צריך לאסוף כמה פרטים.\nבוא נתחיל, מה שמך הפרטי?"}
+        ]
+
         chatbot = gr.Chatbot(
             label="שיחה",
             height=500,
             value=initial_history,
-            bubble_full_width=False,
-            rtl=True
+            rtl=True,
+            type="messages"
         )
 
-        # ---------- Input Section -------------------------------------------
+        # ---- Submit -------------------------
 
         with gr.Row():
             textbox = gr.Textbox(
@@ -165,7 +183,17 @@ def main():
             )
             submit_btn = gr.Button("שלח", variant="primary")
 
-        # ---------- Submit Callback -----------------------------------------
+        # ---- Footer -------------------------
+
+        gr.HTML("""
+        <div class="footer">
+            <p><strong>טיפ:</strong> המערכת תומכת בעברית ובאנגלית. תוכל לשאול בכל שפה שנוחה לך!</p>
+            <p>כל המידע שלך מאובטח ולא נשמר לאחר סיום השיחה.</p>
+        </div>
+        """)
+
+
+        # ---------- Callbacks Section -----------------------------------------
 
         def on_submit(user_msg, history, info):
             new_hist, _, new_info = talk(user_msg, history, info)
@@ -186,14 +214,6 @@ def main():
                        [textbox, chatbot, user_info_state],
                        [chatbot, textbox, user_info_state, phase_indicator])
 
-        # ---------- Footer --------------------------------------------------
-        
-        gr.HTML("""
-        <div class="footer">
-            <p><strong>טיפ:</strong> המערכת תומכת בעברית ובאנגלית. תוכל לשאול בכל שפה שנוחה לך!</p>
-            <p>כל המידע שלך מאובטח ולא נשמר לאחר סיום השיחה.</p>
-        </div>
-        """)
 
     demo.launch(share=True, server_name="0.0.0.0", server_port=7860)
 

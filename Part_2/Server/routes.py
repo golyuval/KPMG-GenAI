@@ -8,11 +8,11 @@ import sys
 from schemas import Request, Response
 from services import (
     collect, verify, validate_input, get_qa_chain, cleanup_old_sessions,
-    session_chains, session_last_access, token_usage
+    session_chains, session_last_access, token_usage, answer
 )
 import rag
-from Core.logger_setup import get_logger
-from Core import config
+from Core.logger import get_logger
+from Server import config
 
 # ------------- logger ----------------------------------------------
 
@@ -26,7 +26,7 @@ router = APIRouter()
 
 @router.get("/health")
 async def health_check():
-    """Health check endpoint"""
+    
     return {
         "status": "healthy",
         "active_sessions": len(session_chains),
@@ -46,27 +46,35 @@ async def chat(req: Request):
         if user_msg != req.user_msg:
             return Response(assistant_msg=user_msg, user_info=req.user_info)
         
-        # Get user ID for tracking
-        user_id = req.user_info.get("id_number") if req.user_info else "anonymous"
+       
+        if req.user_info is None:
+            req.user_info = {"verified": False, "collection_complete": False}
+        
+        user_id = req.user_info.get("id_number", "anonymous")
         logger.info(f"Processing request from {user_id}: {req.user_msg[:50]}...")
         
+        # Debug: Log the user_info state and which phase we're entering
+        logger.info(f"DEBUG: req.user_info = {req.user_info}")
+        logger.info(f"DEBUG: user_info.get('verified'): {req.user_info.get('verified', False)}")
+        logger.info(f"DEBUG: user_info.get('collection_complete'): {req.user_info.get('collection_complete', False)}")
+
         # --- clean sessions -------------------------------------------
 
         if len(session_chains) > 50:
             cleanup_old_sessions()
         
-        # ---------- phase 1 : collection ------------------------------
+        # --- phase 1 : collection ------------------------------
         
-        if not req.user_info:
-            
-            assistant, info = collect(req.history, req.user_msg)
-            
+        if not req.user_info.get("collection_complete", False):
+            logger.info("DEBUG: Entering COLLECTION phase")
+            assistant, info = collect(req.history, req.user_msg, req.user_info)
+            logger.info(f"DEBUG: Collection returned user_info: {info}")
             return Response(assistant_msg=assistant, user_info=info)
         
-        # ---------- phase 1.5 : verification --------------------------
+        # --- phase 1.5 : verification --------------------------
         
-        elif req.user_info and not req.user_info.get("verified", False):
-
+        elif not req.user_info.get("verified", False):
+            logger.info("DEBUG: Entering VERIFICATION phase")
             assistant, updated_info, is_verified = verify(req.history, req.user_msg, req.user_info)
             
             if is_verified:
@@ -74,70 +82,13 @@ async def chat(req: Request):
                 
             return Response(assistant_msg=assistant, user_info=updated_info)
 
-        # ---------- phase 2 : QA --------------------------------------
+        # --- phase 2 : answer questions --------------------------------------
         
         else:
-            
-            # ----- get session ID --------------------------
-        
-            session_id = req.user_info.get("id_number", f"temp_{int(time.time())}")
-            
-            if session_id not in session_chains:
-                session_chains[session_id] = get_qa_chain(session_id)
-                logger.info(f"Created new session for {session_id}")
-            
-            session_last_access[session_id] = time.time()
-            
-            # ----- perform retrieval -----------------------
-            
-            user_language = req.user_info.get("language", "he")
-            retrieved_docs = rag.rag.search(req.user_msg, k=4)
-            user_context = json.dumps(req.user_info, ensure_ascii=False)
-            
-            # ----- run chain -------------------------------
-        
-            qa_chain = session_chains[session_id]
-            result = qa_chain({
-                "question": req.user_msg,
-                "user_info": user_context,
-                "hmo_name": req.user_info.get("hmo_name", "לא ידוע"),
-                "tier": req.user_info.get("tier", "לא ידוע"),
-                "json_format": config.chatbot_format_qa,
-                "language": "Hebrew" if user_language == "he" else "English"
-            })
-            
-            answer = result.get("answer", "מצטער, לא הצלחתי למצוא תשובה.")
+            logger.info("DEBUG: Entering Q&A phase")
+            assistant_msg, new_info = answer(req.history, req.user_msg, req.user_info)
 
-            # Extract assistant_message if it's still in JSON format
-            try:
-                if answer.startswith('{') and answer.endswith('}'):
-                    parsed_answer = json.loads(answer)
-                    answer = parsed_answer.get("assistant_message", answer)
-            except json.JSONDecodeError:
-                pass  
-
-            # ----- format citations -----------------------
-
-            if retrieved_docs["documents"]:
-                citations_text = "\n\n**מקורות:**\n"
-                
-                # Get metadata from RAG search results
-                rag_results = retrieved_docs.get("metadata", {}).get("results_preview", [])
-                
-                for i, doc_info in enumerate(rag_results[:3], 1):
-                    hmo = doc_info.get("metadata", {}).get("hmo", "לא ידוע")
-                    content_preview = doc_info.get("content", "")[:120] + "..." if len(doc_info.get("content", "")) > 120 else doc_info.get("content", "")
-                    score = doc_info.get("score", 0)
-                    
-                    citations_text += f"[{i}] {hmo} (רלוונטיות: {score:.2f}): {content_preview}\n"
-                
-                final_answer = answer + citations_text
-            else:
-                final_answer = answer + "\n\n**לא נמצאו מקורות תומכים**"
-            
-            logger.info(f"Retrieval quality - Avg score: {retrieved_docs['metadata']['avg_similarity_score']:.3f}")
-            
-            return Response(assistant_msg=final_answer, user_info=req.user_info)
+            return Response(assistant_msg=assistant_msg, user_info=new_info)
             
     except Exception as e:
         logger.error(f"Error in chat endpoint: {str(e)}", exc_info=True)
@@ -147,7 +98,7 @@ async def chat(req: Request):
 
 @router.get("/token-usage")
 async def get_token_usage():
-    """Get token usage statistics"""
+    
     return {
         "token_usage": token_usage,
         "timestamp": datetime.now().isoformat()
@@ -158,7 +109,7 @@ async def get_rag_stats():
     try:
         return {
             "search_count": rag.rag.search_count,
-            "cache_stats": rag.rag.get_cache_stats(),
+            "stats": rag.rag.get_stats(),
             "recent_searches": rag.rag.search_history[-10:] if hasattr(rag.rag, 'search_history') else []
         }
     except Exception as e:
@@ -173,11 +124,15 @@ async def get_info_logs(
     
     try:
         
+        # --- get log file --------------------------------------------
+        
         server_dir = Path(__file__).parent
         part2_dir = server_dir.parent
-        log_file = part2_dir / "Log" / "log_info.log"
+        log_file = part2_dir / "Log" / "info.log"
         
         logger.info(f"Checking log file at: {log_file.absolute()}")
+        
+        # --- no log file ----------------------------------------------
         
         if not log_file.exists():
             return {
@@ -186,6 +141,7 @@ async def get_info_logs(
                 "working_dir": str(Path.cwd())
             }
         
+        # --- read log file --------------------------------------------
         
         with open(log_file, 'r', encoding='utf-8', errors='ignore') as f:
             all_lines = f.readlines()
@@ -210,10 +166,14 @@ async def get_error_logs(
     """Get recent error logs"""
     
     try:
-        # Same path resolution
+        
+        # --- get log file --------------------------------------------
+
         server_dir = Path(__file__).parent
         part2_dir = server_dir.parent
-        log_file = part2_dir / "Log" / "log_error.log"
+        log_file = part2_dir / "Log" / "error.log"
+
+        # --- no log file ----------------------------------------------
         
         if not log_file.exists():
             log_file.parent.mkdir(parents=True, exist_ok=True)
@@ -223,6 +183,8 @@ async def get_error_logs(
                 "message": "No errors logged yet",
                 "file_created": True
             }
+        
+        # --- read log file --------------------------------------------
         
         with open(log_file, 'r', encoding='utf-8', errors='ignore') as f:
             all_lines = f.readlines()

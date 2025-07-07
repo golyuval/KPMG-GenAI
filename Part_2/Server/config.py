@@ -39,7 +39,7 @@ You need to collect the following information from the user :
 
 Put your string response in <assistant_message>.
 Attach the user answers to the perfect <key> in the json.
-When ALL user information is filled mark <collection_complete> = True, then express the information gathered (each field seperated by \n\n) and ask for approval in <assistant_message>.
+When ALL user information is filled and not empty - mark <collection_complete> = True, then express the information gathered (in marked down format, each field seperated by \n\n) and ask for approval in <assistant_message>.
 
 """
 

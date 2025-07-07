@@ -4,7 +4,7 @@ from typing import List, Dict, Any
 
 class Request(BaseModel):
     history: List[Dict[str, str]] = Field(default_factory=list)
-    user_info: Dict[str, Any] | None = None
+    user_info: Dict[str, Any] | None = Field(default=None)
     user_msg: str
 
 class Response(BaseModel):
